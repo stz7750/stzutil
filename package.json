@@ -1,27 +1,42 @@
 {
-  "name": "stzutil",
+  "name": "stzutil-js",
   "version": "1.0.1",
   "description": "개발 편의성 유틸",
   "main": "build/index.js",
   "types": "build/types/index.d.ts",
   "author": "stztic8462@gmail.com",
   "license": "MIT",
-  "private": true,
+   "repository": {
+    "type": "git",
+    "url": "https://github.com/stz7750/stzutil.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stz7750/stzutil/issues"
+  },
+  "homepage": "https://github.com/stz7750/stzutil#readme",
+  "files": [
+    "build",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "clean": "rm -rf build"
+    "clean": "rm -rf build",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
     "utils",
     "utilities",
     "typescript",
+    "nestjs",
     "frontend",
     "process",
     "crypto",
-    "request"
+    "request",
+    "http",
+    "fetch"
   ],
-  "dependencies": {
+  "devDependencies": {
     "@types/node": "^25.0.3",
     "prettier": "^3.6.2",
     "typedoc": "^0.28.14",
