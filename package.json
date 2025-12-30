@@ -6,18 +6,11 @@
   "types": "build/types/index.d.ts",
   "exports": {
     ".": {
-      "browser": {
-        "types": "./build/types/browser.d.ts",
-        "default": "./build/browser.js"
-      },
-      "node": {
-        "types": "./build/types/index.d.ts",
-        "default": "./build/index.js"
-      },
-      "default": {
-        "types": "./build/types/index.d.ts",
-        "default": "./build/index.js"
-      }
+      "browser": "./build/browser.js",
+      "node": "./build/index.js",
+      "import": "./build/index.js",
+      "require": "./build/index.js",
+      "default": "./build/index.js"
     },
     "./browser": {
       "types": "./build/types/browser.d.ts",

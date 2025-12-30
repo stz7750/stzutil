@@ -16,7 +16,8 @@
  * ═════════════════════════════════════════════════════════════
  */
 
-export { StzCore, stzCore } from './core';
+// Browser-compatible core
+export { StzCore, stzCore } from './core/browser';
 
 // Browser-compatible utilities only
 export { StzUtils } from './utils/StzUtils';
