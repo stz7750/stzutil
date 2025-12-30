@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "declaration": true,
+    "moduleResolution": "Node",
+    "declarationDir": "./build/types",
+    "outDir": "./build",
+    "strict": true,
+    "moduleDetection": "force",
+    "allowJs": true, //js files 허용
+    "noImplicitAny": false // 암시적 any 타입 허용
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

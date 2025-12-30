@@ -1,0 +1,11 @@
+node_modules
+/.idea
+.history
+.prettierrc
+stzUtils.iml
+*.iml
+**/.DS_Store
+**/*.log
+.env
+dist/
+build/
