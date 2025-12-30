@@ -14,8 +14,6 @@
  *   - DATE : 25. 11. 8. | Author : stz | 최초 생성
  * ═════════════════════════════════════════════════════════════
  */
-import { createHash } from 'crypto';
-import { randomBytes } from 'node:crypto';
 
 export class StzUtils {
 	/**
@@ -536,34 +534,6 @@ export class StzUtils {
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
-	}
-
-	static encryptSHA256(data: string, salt: string): string {
-		return createHash('sha256').update(salt, 'utf8').update(data, 'utf8').digest('hex');
-	}
-
-	static makeSalt(bytes: number = 16): string {
-		return randomBytes(bytes).toString('hex');
-	}
-
-	static generatePrimaryKey(): String {
-		const hex = this.makeSalt(1);
-		const timestamp = this.getTimeStamp();
-		const ts = timestamp.slice(2);
-		return `${hex}${ts}`;
-	}
-
-	private static getTimeStamp(): string {
-		const d = new Date();
-		const pad = (n: number, w = 2) => n.toString().padStart(w, '0');
-		const yyyy = d.getFullYear().toString();
-		const MM = pad(d.getMonth() + 1);
-		const dd = pad(d.getDate());
-		const HH = pad(d.getHours());
-		const mm = pad(d.getMinutes());
-		const ss = pad(d.getSeconds());
-		const SSS = pad(d.getMilliseconds(), 3);
-		return `${yyyy}${MM}${dd}${HH}${mm}${ss}${SSS}`;
 	}
 
 	/**

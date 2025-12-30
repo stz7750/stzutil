@@ -1,9 +1,33 @@
 {
   "name": "stzutil-js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "개발 편의성 유틸",
   "main": "build/index.js",
   "types": "build/types/index.d.ts",
+  "exports": {
+    ".": {
+      "browser": {
+        "types": "./build/types/browser.d.ts",
+        "default": "./build/browser.js"
+      },
+      "node": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "default": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/index.js"
+      }
+    },
+    "./browser": {
+      "types": "./build/types/browser.d.ts",
+      "default": "./build/browser.js"
+    },
+    "./node": {
+      "types": "./build/types/index.d.ts",
+      "default": "./build/index.js"
+    }
+  },
   "author": "stztic8462@gmail.com",
   "license": "MIT",
   "repository": {
