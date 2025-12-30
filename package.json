@@ -1,6 +1,6 @@
 {
   "name": "stzutil",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "개발 편의성 유틸",
   "main": "build/index.js",
   "types": "build/types/index.d.ts",
