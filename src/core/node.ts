@@ -1,6 +1,6 @@
 /**
  * ═════════════════════════════════════════════════════════════
- * 📄 FILE     : core/index.ts
+ * 📄 FILE     : core/node.ts
  * 📁 PACKAGE  : stz-utils
  * 👤 AUTHOR   : stz
  * 🕒 CREATED  : 2025/12/30

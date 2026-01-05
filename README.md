@@ -7,9 +7,9 @@
 ```
 stzUtils/
 ├── src/
-│   ├── index.ts              # 메인 진입점
+│   ├── node.ts              # 메인 진입점
 │   ├── core/
-│   │   └── index.ts          # StzCore 통합 클래스
+│   │   └── node.ts          # StzCore 통합 클래스
 │   └── utils/
 │       ├── StzUtils.ts       # 프론트엔드 유틸리티
 │       ├── ExecUtil.ts       # 프로세스 & 파일 시스템 유틸리티
