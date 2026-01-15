@@ -364,7 +364,12 @@ export class StzUtils {
 		return Object.prototype.toString.call(value).slice(8, -1);
 	}
 
-	static buildTree(data: Array<Record<string, any>>, idKey: string, parentKey: string, childrenKey: string = 'children'): Array<Record<string, any>> {
+	static buildTree(
+		data: Array<Record<string, any>>,
+		idKey: string,
+		parentKey: string,
+		childrenKey: string = 'children'
+	): Array<Record<string, any>> {
 		const tree: Array<Record<string, any>> = [];
 		const lookup: Record<string, any> = {};
 
@@ -391,9 +396,9 @@ export class StzUtils {
 		return this.getType(value) === 'Array';
 	}
 
-    static isNumeric(value : any): boolean {
-        return !isNaN(parseFloat(value)) && isFinite(value);
-    }
+	static isNumeric(value: any): boolean {
+		return !isNaN(parseFloat(value)) && isFinite(value);
+	}
 
 	static omit(obj: any, keys: string[]): any {
 		const type = this.getType(obj);
@@ -568,7 +573,10 @@ export class StzUtils {
 
 		// 3자리 hex를 6자리로 확장 (#F57 -> #FF5577)
 		if (cleanHex.length === 3) {
-			cleanHex = cleanHex.split('').map(c => c + c).join('');
+			cleanHex = cleanHex
+				.split('')
+				.map(c => c + c)
+				.join('');
 		}
 
 		if (cleanHex.length !== 6) {
@@ -681,5 +689,68 @@ export class StzUtils {
 	 */
 	static rgbToHex(rgb: string): string {
 		return this.rgbaToHex(rgb);
+	}
+
+	/**
+	 * @description 문자열에 대문자가 포함되어 있는지 확인합니다.
+	 * @param {string} str
+	 * @returns {boolean}
+	 */
+	static hasUpperCase(str: string): boolean {
+		return str !== str.toLowerCase();
+	}
+
+	/**
+	 * @description 로컬 스토리지에서 키로 값을 가져옵니다.
+	 * @param {string} key
+	 * @returns {string | null}
+	 */
+	static getLocalStorageByKey(key: string): string | null {
+		if (this.getType(window) === 'undefined') return null;
+		if (!window.localStorage) return null;
+		const raw = window.localStorage.getItem(key);
+		if (raw == null) return null;
+		return this.str(raw);
+	}
+
+	/**
+	 * @description 로컬 스토리지에서 JSON 값을 가져옵니다.
+	 * @param {string} key
+	 * @returns {T | null}
+	 */
+	static getLocalStorageJson<T = unknown>(key: string): T | null {
+		const raw = this.getLocalStorageByKey(key);
+		if (raw == null) return null;
+		try {
+			return JSON.parse(raw) as T;
+		} catch {
+			return null;
+		}
+	}
+
+	/**
+	 * @description 로컬 스토리지에 키-값 쌍을 저장합니다.
+	 * @param {string} key
+	 * @param {T} value
+	 * @returns {boolean}
+	 */
+	static setLocalStorageByKey<T>(key: string, value: T): boolean {
+		try {
+			if (typeof window === 'undefined') return false;
+			const storage = window.localStorage;
+			if (!storage) return false;
+
+			if (value === undefined) {
+				storage.removeItem(key);
+				return true;
+			}
+
+			const data = typeof value === 'string' ? value : JSON.stringify(value);
+
+			storage.setItem(key, data);
+			return true;
+		} catch (err) {
+			return false;
+		}
 	}
 }
