@@ -18,6 +18,7 @@
 
 import { StzUtils } from '../utils/StzUtils';
 import { FetchUtil } from '../utils/FetchUtil';
+import { Chronos } from '../utils/ChronosUtil';
 
 /**
  * 통합 유틸리티 클래스 (Browser 전용)
@@ -35,23 +36,25 @@ import { FetchUtil } from '../utils/FetchUtil';
  * ```
  */
 export class StzCore {
-    /**
-     * Frontend utility functions
-     * - Type checking (isNull, isUndefined, isString, isNumber, etc.)
-     * - Type conversion (toInt, toFloat, toBoolean, etc.)
-     * - String manipulation (capitalize, toSnakeCase, toCamelCase, etc.)
-     * - Array utilities (chunk, unique, shuffle, etc.)
-     * - Object utilities (merge, cloneDeep, isEmpty, etc.)
-     * - Color utilities (hexToRgba, rgbToHex, etc.)
-     */
-    public stzUtils = StzUtils;
+	/**
+	 * Frontend utility functions
+	 * - Type checking (isNull, isUndefined, isString, isNumber, etc.)
+	 * - Type conversion (toInt, toFloat, toBoolean, etc.)
+	 * - String manipulation (capitalize, toSnakeCase, toCamelCase, etc.)
+	 * - Array utilities (chunk, unique, shuffle, etc.)
+	 * - Object utilities (merge, cloneDeep, isEmpty, etc.)
+	 * - Color utilities (hexToRgba, rgbToHex, etc.)
+	 */
+	public stzUtils = StzUtils;
 
-    /**
-     * HTTP Request utilities
-     * - REST methods (get, post, put, delete, patch)
-     * - Query string utilities (buildQueryString, appendQueryString)
-     */
-    public requestUtil = FetchUtil;
+	/**
+	 * HTTP Request utilities
+	 * - REST methods (get, post, put, delete, patch)
+	 * - Query string utilities (buildQueryString, appendQueryString)
+	 */
+	public requestUtil = FetchUtil;
+
+	public chronosUtil = Chronos;
 }
 
 /**
