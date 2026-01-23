@@ -403,7 +403,7 @@ export class StzUtils {
 	static omit(obj: any, keys: string[]): any {
 		const type = this.getType(obj);
 
-		if (type === 'object') {
+		if (type === 'Null' || (type !== 'Object' && type !== 'Array')) {
 			return obj;
 		}
 
@@ -752,5 +752,20 @@ export class StzUtils {
 		} catch (err) {
 			return false;
 		}
+	}
+
+	static isFalsy(str): boolean {
+		if (
+			str === false ||
+			str === 0 ||
+			str === '' ||
+			str === null ||
+			str === undefined ||
+			(this.isArray(str) && str.length === 0) ||
+			(this.isObj(str) && Object.keys(str).length === 0)
+		) {
+			return true;
+		}
+		return false;
 	}
 }
