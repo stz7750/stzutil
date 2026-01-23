@@ -480,23 +480,38 @@ export class StzUtils {
 	}
 
 	static merge(target: Record<string, any>, source: Record<string, any>): object {
-		const DANGEROUS_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
-		if (!this.isObj(target) || !this.isObj(source)) return source;
+		const DANGEROUS = new Set(['__proto__', 'constructor', 'prototype']);
 
-		const result = { ...target };
+		const t: Record<string, any> = this.isObj(target) ? target : {};
+		const s: Record<string, any> = this.isObj(source) ? source : {};
 
-		for (const key of Reflect.ownKeys(source)) {
-			if (typeof key === 'string' && DANGEROUS_KEYS.has(key)) continue;
+		const result: Record<string, any> = { ...t };
 
-			const sourceVal = Reflect.get(source, key);
-			const targetVal = Reflect.get(target, key);
+		for (const key of Reflect.ownKeys(s)) {
+			if (typeof key === 'string' && DANGEROUS.has(key)) continue;
 
-			if (this.isObj(sourceVal) && this.isObj(targetVal)) {
-				const merged = this.merge(targetVal, sourceVal);
-				Reflect.set(result, key, merged);
-			} else {
-				Reflect.set(result, key, sourceVal);
+			let sv: any;
+			try {
+				sv = Reflect.get(s, key as any);
+			} catch {
+				continue;
 			}
+
+			const tv = Reflect.get(t, key as any);
+
+			if (sv === undefined) continue;
+
+			if (this.isArr(sv)) {
+				result[key as any] = sv.slice();
+				continue;
+			}
+
+			if (this.isObj(sv) && this.isObj(tv)) {
+				result[key as any] = (this as any).merge(tv, sv);
+				continue;
+			}
+
+			result[key as any] = sv;
 		}
 
 		return result;
