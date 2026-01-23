@@ -1,6 +1,6 @@
 {
   "name": "stzutil-js",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "개발 편의성 유틸",
   "exports": {
     "./browser": {
