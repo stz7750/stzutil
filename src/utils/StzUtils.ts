@@ -115,6 +115,24 @@ export class StzUtils {
 		return this.getType(value) === 'Function';
 	}
 
+	/**
+	 * 주어진 문자열이 유효한 URL인지 확인합니다.
+	 * @param value 확인할 값
+	 * @returns 유효한 URL이면 true, 그렇지 않으면 false
+	 */
+	static isUrl(value: string): boolean {
+		if (!this.isString(value)) return false;
+
+		const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(:\d+)?(\/[^\s]*)?$/i;
+
+		try {
+			const url = new URL(value.startsWith('http') ? value : `https://${value}`);
+			return urlPattern.test(value) && !!url.hostname;
+		} catch {
+			return false;
+		}
+	}
+
 	static str(value: number | string | object): string {
 		if (this.getType(value) === 'Object') return JSON.stringify(value);
 		if (this.getType(value) === 'Number') return value.toString();
@@ -289,6 +307,89 @@ export class StzUtils {
 			.replace(/([a-z])([A-Z])/g, '$1-$2')
 			.replace(/[\s_]+/g, '-')
 			.toLowerCase();
+	}
+
+	/**
+	 * 문자열의 특정 범위를 마스킹 처리합니다.
+	 * @param str 원본 문자열
+	 * @param start 마스킹 시작 인덱스
+	 * @param end 마스킹 종료 인덱스 (생략 시 끝까지)
+	 * @param maskChar 마스킹 문자 (기본: '*')
+	 * @returns 마스킹된 문자열
+	 * @example
+	 * ```typescript
+	 * mask('hello world', 2, 7) // "he*** world"
+	 * mask('1234567890', 4) // "1234******"
+	 * ```
+	 */
+	static mask(str: string, start: number = 0, end?: number, maskChar: string = '*'): string {
+		if (!this.isString(str) || str.length === 0) return '';
+
+		const endIndex = end ?? str.length;
+		const beforeMask = str.substring(0, start);
+		const maskLength = Math.max(0, endIndex - start);
+		const masked = maskChar.repeat(maskLength);
+		const afterMask = str.substring(endIndex);
+
+		return beforeMask + masked + afterMask;
+	}
+
+	/**
+	 * 이메일 주소를 마스킹 처리합니다.
+	 * @param email 이메일 주소
+	 * @param visibleChars @ 앞에서 보여줄 문자 수 (기본: 2)
+	 * @param maskChar 마스킹 문자 (기본: '*')
+	 * @returns 마스킹된 이메일
+	 * @example
+	 * ```typescript
+	 * maskEmail('example@gmail.com') // "ex*****@gmail.com"
+	 * maskEmail('abc@test.com', 1) // "a**@test.com"
+	 * ```
+	 */
+	static maskEmail(email: string, visibleChars: number = 2, maskChar: string = '*'): string {
+		if (!this.isString(email) || !email.includes('@')) return email;
+
+		const [localPart, domain] = email.split('@');
+		if (localPart.length <= visibleChars) {
+			return this.mask(localPart, 1, undefined, maskChar) + '@' + domain;
+		}
+
+		const maskedLocal = this.mask(localPart, visibleChars, undefined, maskChar);
+		return maskedLocal + '@' + domain;
+	}
+
+	/**
+	 * 전화번호를 완전히 마스킹 처리합니다.
+	 * @param phoneNumber 전화번호
+	 * @param maskChar 마스킹 문자 (기본: '*')
+	 * @returns 마스킹된 전화번호
+	 * @example
+	 * ```typescript
+	 * maskPhoneNumber('010-1234-5678') // "***-****-****"
+	 * maskPhoneNumber('01012345678') // "***********"
+	 * ```
+	 */
+	static maskPhoneNumber(phoneNumber: string, maskChar: string = '*'): string {
+		if (!this.isString(phoneNumber) || phoneNumber.length === 0) return '';
+
+		return phoneNumber.replace(/\d/g, maskChar);
+	}
+
+	/**
+	 * 비밀번호를 완전히 마스킹 처리합니다.
+	 * @param password 비밀번호
+	 * @param maskChar 마스킹 문자 (기본: '*')
+	 * @returns 마스킹된 비밀번호
+	 * @example
+	 * ```typescript
+	 * maskPassword('myP@ssw0rd') // "**********"
+	 * maskPassword('secret123', '#') // "#########"
+	 * ```
+	 */
+	static maskPassword(password: string, maskChar: string = '*'): string {
+		if (!this.isString(password) || password.length === 0) return '';
+
+		return maskChar.repeat(password.length);
 	}
 
 	/**
