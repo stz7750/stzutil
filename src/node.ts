@@ -23,6 +23,14 @@ export { StzCore, stzCore } from './core/node';
 export { StzUtils } from './utils/StzUtils';
 export { ExecUtil } from './utils/ExecUtil';
 export { CryptoUtil } from './utils/CryptoUtil';
-export { FetchUtil } from './utils/FetchUtil';
+export { FetchUtil, FetchHttpError } from './utils/FetchUtil';
 
-export type { RequestOptions, RequestResponse, HttpMethod, QueryParams, QueryValue } from './utils/FetchUtil';
+export type {
+  RequestOptions,
+  RequestRuntimeOptions,
+  RequestResponse,
+  ResponseParseMode,
+  HttpMethod,
+  QueryParams,
+  QueryValue,
+} from './utils/FetchUtil';

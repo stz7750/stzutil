@@ -21,8 +21,16 @@ export { StzCore, stzCore } from './core/browser';
 
 // Browser-compatible utilities only
 export { StzUtils } from './utils/StzUtils';
-export { FetchUtil } from './utils/FetchUtil';
+export { FetchUtil, FetchHttpError } from './utils/FetchUtil';
 export { Chronos } from './utils/ChronosUtil';
 
-export type { RequestOptions, RequestResponse, HttpMethod, QueryParams, QueryValue } from './utils/FetchUtil';
+export type {
+  RequestOptions,
+  RequestRuntimeOptions,
+  RequestResponse,
+  ResponseParseMode,
+  HttpMethod,
+  QueryParams,
+  QueryValue,
+} from './utils/FetchUtil';
 export type { ChronosUnit } from './utils/ChronosUtil';
