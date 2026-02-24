@@ -222,6 +222,31 @@ export class StzUtils {
 	}
 
 	/**
+	 * 숫자 문자열에 천 단위 콤마를 추가합니다.
+	 * @param value 숫자 또는 숫자 문자열
+	 * @returns 천 단위 콤마가 적용된 문자열
+	 */
+	static addComma(value: string | number): string {
+		if (this.isNullOrUndefined(value)) return '';
+
+		const input = String(value).trim();
+		if (input === '' || input === '-' || input === '+') return input;
+
+		const sign = input.startsWith('-') ? '-' : input.startsWith('+') ? '+' : '';
+		const unsigned = sign ? input.slice(1) : input;
+		const normalized = unsigned.replace(/,/g, '');
+
+		if (!/^\d+(\.\d+)?$/.test(normalized)) return input;
+
+		const [integerPart, decimalPart] = normalized.split('.');
+		const integerWithComma = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+		return decimalPart !== undefined
+			? `${sign}${integerWithComma}.${decimalPart}`
+			: `${sign}${integerWithComma}`;
+	}
+
+	/**
 	 * 값을 boolean으로 변환합니다.
 	 * @param value 변환할 값
 	 * @returns boolean 값
