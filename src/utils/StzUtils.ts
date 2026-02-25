@@ -133,6 +133,298 @@ export class StzUtils {
 		}
 	}
 
+	/**
+	 * 이메일 형식이 유효한지 확인합니다.
+	 * @param email 확인할 이메일 문자열
+	 * @returns 유효한 이메일 형식이면 true
+	 */
+	static isValidEmail(email: string): boolean {
+		if (!this.isString(email)) return false;
+
+		const pattern = new RegExp('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$');
+		return pattern.test(email.trim());
+	}
+
+	/**
+	 * 비밀번호 형식이 유효한지 확인합니다.
+	 * 영문/숫자/특수문자를 각각 1개 이상 포함하고 8~20자여야 합니다.
+	 * @param str 확인할 비밀번호 문자열
+	 * @returns 유효한 비밀번호 형식이면 true
+	 */
+	static isValidPassword(str: string): boolean {
+		if (!this.isString(str)) return false;
+
+		const pattern = new RegExp(
+			'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,20}$',
+		);
+		return pattern.test(str);
+	}
+
+	/**
+	 * 비밀번호 강도 기준으로 유효성을 확인합니다.
+	 * normal: 기존 정책(8~20, 영문/숫자/특수문자 포함)
+	 * strict: 10~20, 대문자/소문자/숫자/특수문자 각각 포함
+	 * @param str 확인할 비밀번호 문자열
+	 * @param level 강도 레벨 (기본: normal)
+	 * @returns 정책을 만족하면 true
+	 */
+	static isStrongPasswordLevel(
+		str: string,
+		level: 'normal' | 'strict' = 'normal',
+	): boolean {
+		if (!this.isString(str)) return false;
+
+		const value = str.trim();
+		if (level === 'normal') return this.isValidPassword(value);
+
+		const strictPattern = new RegExp(
+			'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{10,20}$',
+		);
+		return strictPattern.test(value);
+	}
+
+	/**
+	 * 일회용 이메일 도메인 여부를 확인합니다.
+	 * @param email 확인할 이메일 문자열
+	 * @returns 일회용 이메일 도메인이면 true
+	 */
+	static isDisposableEmail(email: string): boolean {
+		if (!this.isValidEmail(email)) return false;
+
+		const domain = email.trim().toLowerCase().split('@')[1];
+		const disposableDomains = [
+			'10minutemail.com',
+			'dispostable.com',
+			'guerrillamail.com',
+			'maildrop.cc',
+			'mailinator.com',
+			'temp-mail.org',
+			'tempmail.com',
+			'trashmail.com',
+			'yopmail.com',
+		];
+
+		return disposableDomains.some(d => domain === d || domain.endsWith(`.${d}`));
+	}
+
+	/**
+	 * 로그인 아이디 형식이 유효한지 확인합니다.
+	 * 영문/숫자/밑줄만 허용하며 기본 4~20자입니다.
+	 * @param str 확인할 아이디 문자열
+	 * @param minLength 최소 길이 (기본: 4)
+	 * @param maxLength 최대 길이 (기본: 20)
+	 * @returns 유효한 아이디 형식이면 true
+	 */
+	static isValidUserId(str: string, minLength: number = 4, maxLength: number = 20): boolean {
+		if (!this.isString(str)) return false;
+
+		const value = str.trim();
+		if (value.length < minLength || value.length > maxLength) return false;
+
+		const pattern = new RegExp('^[a-zA-Z0-9_]+$');
+		return pattern.test(value);
+	}
+
+	/**
+	 * 로그인 아이디 허용 여부를 확인합니다.
+	 * 숫자만/금칙어 포함/반복문자/연속문자를 차단합니다.
+	 * @param id 확인할 아이디 문자열
+	 * @returns 사용 가능한 아이디이면 true
+	 */
+	static isAllowedLoginId(id: string): boolean {
+		if (!this.isValidUserId(id)) return false;
+
+		const value = id.trim().toLowerCase();
+		const bannedWords = [
+			'admin',
+			'administrator',
+			'guest',
+			'manager',
+			'master',
+			'operator',
+			'root',
+			'staff',
+			'support',
+			'system',
+			'test',
+		];
+
+		if (bannedWords.some(word => value.includes(word))) return false;
+		if (new RegExp('^[0-9]+$').test(value)) return false;
+		if (new RegExp('(.)\\1{3,}').test(value)) return false;
+
+		const hasSequentialChars = (target: string, seqLength: number = 4): boolean => {
+			if (target.length < seqLength) return false;
+
+			for (let i = 0; i <= target.length - seqLength; i++) {
+				let isAsc = true;
+				let isDesc = true;
+
+				for (let j = 1; j < seqLength; j++) {
+					const prev = target.charCodeAt(i + j - 1);
+					const curr = target.charCodeAt(i + j);
+					const diff = curr - prev;
+
+					if (diff !== 1) isAsc = false;
+					if (diff !== -1) isDesc = false;
+				}
+
+				if (isAsc || isDesc) return true;
+			}
+
+			return false;
+		};
+
+		if (hasSequentialChars(value)) return false;
+		return true;
+	}
+
+	/**
+	 * 닉네임 형식이 유효한지 확인합니다.
+	 * 한글/영문/숫자/밑줄만 허용하며 기본 2~20자입니다.
+	 * @param str 확인할 닉네임 문자열
+	 * @param minLength 최소 길이 (기본: 2)
+	 * @param maxLength 최대 길이 (기본: 20)
+	 * @returns 유효한 닉네임 형식이면 true
+	 */
+	static isValidNickname(str: string, minLength: number = 2, maxLength: number = 20): boolean {
+		if (!this.isString(str)) return false;
+
+		const value = str.trim();
+		if (value.length < minLength || value.length > maxLength) return false;
+
+		const pattern = new RegExp('^[a-zA-Z0-9가-힣_]+$');
+		return pattern.test(value);
+	}
+
+	/**
+	 * 전화번호 형식이 유효한지 확인합니다. (대한민국 번호 기준)
+	 * 공백/하이픈은 무시하고 검사합니다.
+	 * @param phone 확인할 전화번호 문자열
+	 * @returns 유효한 전화번호 형식이면 true
+	 */
+	static isValidPhoneNumber(phone: string): boolean {
+		if (!this.isString(phone)) return false;
+
+		const normalized = phone.replace(/[\s-]/g, '');
+		const pattern = new RegExp('^(01[016789]|02|0[3-9][0-9])[0-9]{7,8}$');
+		return pattern.test(normalized);
+	}
+
+	/**
+	 * 인증번호 형식이 유효한지 확인합니다.
+	 * @param code 확인할 인증번호 문자열
+	 * @param length 인증번호 길이 (기본: 6)
+	 * @returns 숫자만으로 구성된 지정 길이 인증번호면 true
+	 */
+	static isValidVerificationCode(code: string, length: number = 6): boolean {
+		if (!this.isString(code) || length <= 0) return false;
+
+		const pattern = new RegExp(`^[0-9]{${length}}$`);
+		return pattern.test(code.trim());
+	}
+
+	/**
+	 * 비밀번호와 비밀번호 확인 값이 일치하는지 확인합니다.
+	 * @param password 비밀번호
+	 * @param confirmPassword 비밀번호 확인
+	 * @returns 두 값이 모두 문자열이며 동일하면 true
+	 */
+	static isPasswordConfirmed(password: string, confirmPassword: string): boolean {
+		if (!this.isString(password) || !this.isString(confirmPassword)) return false;
+		return password === confirmPassword;
+	}
+
+	/**
+	 * 문자열 내 모든 공백 문자를 제거합니다.
+	 * @param str 원본 문자열
+	 * @returns 공백이 제거된 문자열
+	 */
+	static removeWhitespace(str: string): string {
+		if (!this.isString(str)) return '';
+		return str.replace(/\s+/g, '');
+	}
+
+	/**
+	 * 생년월일 형식이 유효한지 확인합니다.
+	 * YYYYMMDD 또는 YYYY-MM-DD 형식을 지원합니다.
+	 * @param birthDate 확인할 생년월일 문자열
+	 * @returns 유효한 생년월일이면 true
+	 */
+	static isValidBirthDate(birthDate: string): boolean {
+		if (!this.isString(birthDate)) return false;
+
+		const normalized = birthDate.replace(/-/g, '').trim();
+		const pattern = new RegExp('^(19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])$');
+		if (!pattern.test(normalized)) return false;
+
+		const year = Number(normalized.slice(0, 4));
+		const month = Number(normalized.slice(4, 6));
+		const day = Number(normalized.slice(6, 8));
+
+		const date = new Date(year, month - 1, day);
+		return (
+			date.getFullYear() === year &&
+			date.getMonth() === month - 1 &&
+			date.getDate() === day
+		);
+	}
+
+	/**
+	 * isValidBirthDate 오타 호환 메서드입니다.
+	 * @param birthDate 확인할 생년월일 문자열
+	 * @returns 유효한 생년월일이면 true
+	 */
+	static isValidBirtDate(birthDate: string): boolean {
+		return this.isValidBirthDate(birthDate);
+	}
+
+	/**
+	 * 성인 여부를 확인합니다.
+	 * @param birthDate 생년월일 문자열(YYYYMMDD 또는 YYYY-MM-DD)
+	 * @param adultAge 성인 기준 나이 (기본: 19)
+	 * @param referenceDate 기준일 (기본: 오늘)
+	 * @returns 성인이면 true
+	 */
+	static isAdult(
+		birthDate: string,
+		adultAge: number = 19,
+		referenceDate: Date = new Date(),
+	): boolean {
+		if (!this.isValidBirthDate(birthDate) || adultAge < 0) return false;
+
+		const normalized = birthDate.replace(/-/g, '').trim();
+		const year = Number(normalized.slice(0, 4));
+		const month = Number(normalized.slice(4, 6));
+		const day = Number(normalized.slice(6, 8));
+		const birth = new Date(year, month - 1, day);
+
+		let age = referenceDate.getFullYear() - birth.getFullYear();
+		const hasBirthdayPassed =
+			referenceDate.getMonth() > birth.getMonth() ||
+			(referenceDate.getMonth() === birth.getMonth() &&
+				referenceDate.getDate() >= birth.getDate());
+
+		if (!hasBirthdayPassed) age -= 1;
+		return age >= adultAge;
+	}
+
+	/**
+	 * 미성년자 여부를 확인합니다.
+	 * @param birthDate 생년월일 문자열(YYYYMMDD 또는 YYYY-MM-DD)
+	 * @param adultAge 성인 기준 나이 (기본: 19)
+	 * @param referenceDate 기준일 (기본: 오늘)
+	 * @returns 미성년자면 true
+	 */
+	static isMinor(
+		birthDate: string,
+		adultAge: number = 19,
+		referenceDate: Date = new Date(),
+	): boolean {
+		if (!this.isValidBirthDate(birthDate) || adultAge < 0) return false;
+		return !this.isAdult(birthDate, adultAge, referenceDate);
+	}
+
 	static str(value: number | string | object): string {
 		if (this.getType(value) === 'Object') return JSON.stringify(value);
 		if (this.getType(value) === 'Number') return value.toString();
