@@ -155,7 +155,7 @@ export class StzUtils {
 		if (!this.isString(str)) return false;
 
 		const pattern = new RegExp(
-			'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,20}$',
+			'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,20}$'
 		);
 		return pattern.test(str);
 	}
@@ -168,17 +168,14 @@ export class StzUtils {
 	 * @param level 강도 레벨 (기본: normal)
 	 * @returns 정책을 만족하면 true
 	 */
-	static isStrongPasswordLevel(
-		str: string,
-		level: 'normal' | 'strict' = 'normal',
-	): boolean {
+	static isStrongPasswordLevel(str: string, level: 'normal' | 'strict' = 'normal'): boolean {
 		if (!this.isString(str)) return false;
 
 		const value = str.trim();
 		if (level === 'normal') return this.isValidPassword(value);
 
 		const strictPattern = new RegExp(
-			'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{10,20}$',
+			'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{10,20}$'
 		);
 		return strictPattern.test(value);
 	}
@@ -363,11 +360,7 @@ export class StzUtils {
 		const day = Number(normalized.slice(6, 8));
 
 		const date = new Date(year, month - 1, day);
-		return (
-			date.getFullYear() === year &&
-			date.getMonth() === month - 1 &&
-			date.getDate() === day
-		);
+		return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
 	}
 
 	/**
@@ -386,11 +379,7 @@ export class StzUtils {
 	 * @param referenceDate 기준일 (기본: 오늘)
 	 * @returns 성인이면 true
 	 */
-	static isAdult(
-		birthDate: string,
-		adultAge: number = 19,
-		referenceDate: Date = new Date(),
-	): boolean {
+	static isAdult(birthDate: string, adultAge: number = 19, referenceDate: Date = new Date()): boolean {
 		if (!this.isValidBirthDate(birthDate) || adultAge < 0) return false;
 
 		const normalized = birthDate.replace(/-/g, '').trim();
@@ -402,8 +391,7 @@ export class StzUtils {
 		let age = referenceDate.getFullYear() - birth.getFullYear();
 		const hasBirthdayPassed =
 			referenceDate.getMonth() > birth.getMonth() ||
-			(referenceDate.getMonth() === birth.getMonth() &&
-				referenceDate.getDate() >= birth.getDate());
+			(referenceDate.getMonth() === birth.getMonth() && referenceDate.getDate() >= birth.getDate());
 
 		if (!hasBirthdayPassed) age -= 1;
 		return age >= adultAge;
@@ -416,11 +404,7 @@ export class StzUtils {
 	 * @param referenceDate 기준일 (기본: 오늘)
 	 * @returns 미성년자면 true
 	 */
-	static isMinor(
-		birthDate: string,
-		adultAge: number = 19,
-		referenceDate: Date = new Date(),
-	): boolean {
+	static isMinor(birthDate: string, adultAge: number = 19, referenceDate: Date = new Date()): boolean {
 		if (!this.isValidBirthDate(birthDate) || adultAge < 0) return false;
 		return !this.isAdult(birthDate, adultAge, referenceDate);
 	}
@@ -439,6 +423,16 @@ export class StzUtils {
 			return 0;
 		}
 		return value;
+	}
+
+	/**
+	 * 값이 null 또는 undefined이면 대체 값을 반환합니다.
+	 * @param value 원본 값
+	 * @param fallback 대체 값
+	 * @returns value가 null 또는 undefined이면 fallback, 아니면 value
+	 */
+	static coalesce<T, U>(value: T, fallback: U): T | U {
+		return this.isNullOrUndefined(value) ? fallback : value;
 	}
 
 	static convertEmptyToTarget(value: string | number, target: string | number): string | number {
@@ -533,9 +527,7 @@ export class StzUtils {
 		const [integerPart, decimalPart] = normalized.split('.');
 		const integerWithComma = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-		return decimalPart !== undefined
-			? `${sign}${integerWithComma}.${decimalPart}`
-			: `${sign}${integerWithComma}`;
+		return decimalPart !== undefined ? `${sign}${integerWithComma}.${decimalPart}` : `${sign}${integerWithComma}`;
 	}
 
 	/**
@@ -558,16 +550,6 @@ export class StzUtils {
 		}
 
 		return Boolean(value);
-	}
-
-	/**
-	 * null/undefined일 때 기본값을 반환합니다.
-	 * @param value 확인할 값
-	 * @param defaultValue 기본값
-	 * @returns value 또는 defaultValue
-	 */
-	static defaultValue<T>(value: T | null | undefined, defaultValue: T): T {
-		return this.isNullOrUndefined(value) ? defaultValue : value!;
 	}
 
 	/**
