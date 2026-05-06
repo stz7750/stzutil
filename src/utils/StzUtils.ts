@@ -139,7 +139,7 @@ export class StzUtils {
 	 * @returns 유효한 이메일 형식이면 true
 	 */
 	static isValidEmail(email: string): boolean {
-		if (!this.isString(email)) return false;
+		if (!this.isString(email) || this.isBlank(email)) return false;
 
 		const pattern = new RegExp('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$');
 		return pattern.test(email.trim());
@@ -169,7 +169,7 @@ export class StzUtils {
 	 * @returns 정책을 만족하면 true
 	 */
 	static isStrongPasswordLevel(str: string, level: 'normal' | 'strict' = 'normal'): boolean {
-		if (!this.isString(str)) return false;
+		if (!this.isString(str) || this.isBlank(str)) return false;
 
 		const value = str.trim();
 		if (level === 'normal') return this.isValidPassword(value);
@@ -246,7 +246,7 @@ export class StzUtils {
 			'test',
 		];
 
-		if (bannedWords.some(word => value.includes(word))) return false;
+		if (bannedWords.some(word => this.containsTrimLowercase(value, word))) return false;
 		if (new RegExp('^[0-9]+$').test(value)) return false;
 		if (new RegExp('(.)\\1{3,}').test(value)) return false;
 
@@ -541,6 +541,7 @@ export class StzUtils {
 		if (this.isNullOrUndefined(value)) return false;
 
 		if (this.isString(value)) {
+			if (this.isBlank(value)) return false;
 			const lower = value.toLowerCase().trim();
 			return trutshyValues.includes(lower);
 		}
@@ -550,6 +551,53 @@ export class StzUtils {
 		}
 
 		return Boolean(value);
+	}
+
+	/**
+	 * 두 값을 trim + 소문자 기준으로 비교합니다.
+	 * @param a 비교할 첫 번째 값
+	 * @param b 비교할 두 번째 값
+	 * @returns 정규화 후 동일하면 true
+	 */
+	static equalsTrimLowercase(a: unknown, b: unknown): boolean {
+		if (this.isNullOrUndefined(a) || this.isNullOrUndefined(b)) return false;
+
+		return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+	}
+
+	/**
+	 * source가 keyword를 trim + 소문자 기준으로 포함하는지 확인합니다.
+	 * @param source 원본 값
+	 * @param keyword 찾을 값
+	 * @returns 포함하면 true
+	 */
+	static containsTrimLowercase(source: unknown, keyword: unknown): boolean {
+		if (this.isBlank(source) || this.isBlank(keyword)) return false;
+
+		const normalizedSource = String(source).trim().toLowerCase();
+		const normalizedKeyword = String(keyword).trim().toLowerCase();
+		return normalizedSource.includes(normalizedKeyword);
+	}
+
+	/**
+	 * 값이 비어있는 문자열인지 확인합니다. (trim 기준)
+	 * @param value 확인할 값
+	 * @returns null/undefined 이거나 trim 후 빈 문자열이면 true
+	 */
+	static isBlank(value: unknown): boolean {
+		if (this.isNullOrUndefined(value)) return true;
+		if (!this.isString(value)) return false;
+		return value.trim() === '';
+	}
+
+	/**
+	 * 값이 비어있지 않은 문자열인지 확인합니다. (trim 기준)
+	 * @param value 확인할 값
+	 * @returns 문자열이며 trim 후 비어있지 않으면 true
+	 */
+	static isNotBlank(value: unknown): boolean {
+		if (!this.isString(value)) return false;
+		return !this.isBlank(value);
 	}
 
 	/**
@@ -837,7 +885,7 @@ export class StzUtils {
 
 		const type = this.getType(value);
 
-		if (type === 'String' && value.trim() === '') return true;
+		if (type === 'String' && this.isBlank(value)) return true;
 
 		if (type === 'Array' && value.length === 0) return true;
 
